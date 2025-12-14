@@ -15,7 +15,9 @@ const UKZN_COLORS_REVERSED = [...UKZN_COLORS].reverse();
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    // Increased breakpoint to 1024px to treat Tablets (iPad Portrait) as mobile devices
+    // This gives tablets the nicer 'Wizard' view instead of the crowded Desktop view.
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -897,7 +899,7 @@ export default function App() {
                                 <strong>This is a high-stakes production task.</strong> The main risk is <strong>Misrepresentation</strong>.
                                 Pretending AI-generated work is your own is a form of academic misconduct, distinct from just plagiarism.
                                 {moduleRule === 'none' && " You must produce this work entirely yourself."}
-                                {moduleRule === 'limited' && " You can use AI for specific tasks (e.g., grammar) but NOT to write the content."}
+                                {moduleRule === 'limited' && " You can use AI for specific tasks (e.g. grammar) but NOT to write the content."}
                                 {moduleRule === 'full' && " You can use AI to support your writing, but you must verify everything and disclose usage."}
                               </p>
                             )}
