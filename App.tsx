@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { TaskType, MarksStatus, ModuleRule, AppMode } from "./types";
-import { AlertCircle, CheckCircle2, HelpCircle, BookOpen, GraduationCap, FileText, RotateCcw, Sparkles, Copy, Check, ShieldAlert, ListChecks, Lock, PenTool, BrainCircuit, Ghost, Zap, Scale, ArrowRight, Brain, Lightbulb, Microscope, Quote, GitBranch, Target, Layers, ArrowLeft, ChevronRight, Share2 } from "lucide-react";
+import { TaskType, MarksStatus, ModuleRule, AppMode, LogEntry } from "./types";
+import { AlertCircle, CheckCircle2, HelpCircle, BookOpen, GraduationCap, FileText, RotateCcw, Sparkles, Copy, Check, ShieldAlert, ListChecks, Lock, PenTool, BrainCircuit, Ghost, Zap, Scale, ArrowRight, Brain, Lightbulb, Microscope, Quote, GitBranch, Target, Layers, ArrowLeft, ChevronRight, Share2, ScrollText, MessageSquare, Plus, Trash2, Download, ClipboardList } from "lucide-react";
 
 // --- LOGO CONFIGURATION ---
 const UKZN_LOGO_SRC = "https://upload.wikimedia.org/wikipedia/en/5/56/University_of_KwaZulu-Natal_logo.svg";
@@ -39,6 +39,12 @@ export default function App() {
   // Critical Thinking Detail State (Mobile)
   const [activePromptIndex, setActivePromptIndex] = useState<number | null>(null);
 
+  // Log Mode State
+  const [logContext, setLogContext] = useState<TaskType | 'generic'>('generic');
+  const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
+  const [currentEntry, setCurrentEntry] = useState({ prompt: '', output: '', refinement: '' });
+  const [showDeclaration, setShowDeclaration] = useState(false);
+
   const [showPrompt, setShowPrompt] = useState(false);
   const [copied, setCopied] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -54,7 +60,7 @@ export default function App() {
       setMobileStep(0);
       setActivePromptIndex(null);
     }
-    else if (mode === 'advice' || mode === 'critical-thinking') setMobileStep(1); // These modes are single page (mostly)
+    else if (mode === 'advice' || mode === 'critical-thinking' || mode === 'log') setMobileStep(1); 
     else if (mode === 'compliance') {
         if (!taskType) setMobileStep(1);
         else if (!forMarks) setMobileStep(2);
@@ -86,6 +92,8 @@ export default function App() {
     setCopiedIndex(null);
     setMobileStep(0);
     setActivePromptIndex(null);
+    // Don't reset logEntries here so they persist if user checks rules and comes back, 
+    // but maybe we want to keep them? Let's keep them for session.
   };
 
   const handleShare = async () => {
@@ -124,8 +132,14 @@ export default function App() {
         setMode(null);
         return;
     }
+    
+    // 4. Log -> Home
+    if (mode === 'log') {
+        setMode(null);
+        return;
+    }
 
-    // 4. Compliance Wizard Back
+    // 5. Compliance Wizard Back
     if (mode === 'compliance') {
         if (mobileStep === 4) {
             // From Result
@@ -303,6 +317,79 @@ export default function App() {
     );
   };
 
+  // --- LOG MODE FUNCTIONS ---
+  const addLogEntry = () => {
+    if (!currentEntry.prompt.trim()) return; // Must at least have a prompt
+    const newEntry: LogEntry = {
+        id: Date.now().toString(),
+        prompt: currentEntry.prompt,
+        output: currentEntry.output,
+        refinement: currentEntry.refinement
+    };
+    setLogEntries([...logEntries, newEntry]);
+    setCurrentEntry({ prompt: '', output: '', refinement: '' });
+  };
+
+  const deleteLogEntry = (id: string) => {
+    setLogEntries(logEntries.filter(e => e.id !== id));
+  };
+
+  const generateDeclarationText = () => {
+    const date = new Date().toLocaleDateString();
+    const entriesText = logEntries.map((e, i) => 
+`ENTRY ${i + 1}:
+------------------------------------------
+STEP 1: THE PROMPT (What I asked)
+"${e.prompt}"
+
+STEP 2: AI OUTPUT (Summary of result)
+${e.output || "(No summary provided)"}
+
+STEP 3: REFINEMENT (How I verified/changed it)
+${e.refinement || "(No refinement recorded)"}
+------------------------------------------`
+    ).join('\n\n');
+
+    return `AI USAGE DECLARATION - AUDIT LOG
+Date: ${date}
+
+I declare that I have used Artificial Intelligence tools in the preparation of this work as detailed below. 
+I have verified all information and the final submission reflects my own understanding and voice.
+
+${entriesText}
+
+[End of Declaration]`;
+  };
+
+  const copyDeclaration = async () => {
+    const text = generateDeclarationText();
+    try {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+        console.error("Failed to copy", err);
+    }
+  };
+
+  const getLogTitle = () => {
+      switch(logContext) {
+          case 'assignment': return "Assignment Audit Log";
+          case 'research': return "Research Audit Log";
+          case 'study': return "Study Session Log";
+          default: return "AI Audit Log";
+      }
+  };
+
+  const getLogDescription = () => {
+      switch(logContext) {
+          case 'assignment': return "Track how you used AI to support your writing. Focus on how you refined the output.";
+          case 'research': return "Track your search terms and methodology. Ensure no private data was shared.";
+          case 'study': return "Track your revision questions. Ensure you double-checked the facts.";
+          default: return "Track your process. Prove your integrity.";
+      }
+  };
+
   const criticalThinkingPrompts = [
     { 
       title: "Question Assumptions", 
@@ -436,7 +523,8 @@ export default function App() {
                             <div className="h-full bg-[#00AEEF] transition-all duration-500 ease-out" style={{ width: `${getMobileProgress()}%` }}></div>
                         </div>
                     )}
-                    {mode !== 'compliance' && <div className="flex-1 text-center font-bold text-slate-700">Guide</div>}
+                    {mode === 'log' && <div className="flex-1 text-center font-bold text-slate-700">Audit Log</div>}
+                    {mode !== 'compliance' && mode !== 'log' && <div className="flex-1 text-center font-bold text-slate-700">Guide</div>}
                     <div className="w-10"></div> {/* Spacer for alignment */}
                 </div>
             )}
@@ -502,44 +590,242 @@ export default function App() {
                     {!isMobile && <p className="text-slate-600">12 Ways to use AI to sharpen your mind, not replace it.</p>}
                 </div>
             )}
+             {mode === 'log' && (
+                <div className="animate-in fade-in zoom-in-95 duration-300">
+                    <h1 className="text-3xl font-extrabold text-black tracking-tight">{getLogTitle()}</h1>
+                    {!isMobile && <p className="text-slate-600">{getLogDescription()}</p>}
+                </div>
+            )}
           </div>
 
           {/* LANDING PAGE SELECTION */}
           {mode === null && (
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-3xl mx-auto">
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-5xl mx-auto">
+                {/* 1. Check Rules */}
                 <button 
                   onClick={() => setMode('compliance')}
-                  className="group relative overflow-hidden bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#00AEEF] transition-all duration-300 text-left"
+                  className="group relative overflow-hidden bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#00AEEF] transition-all duration-300 text-left flex flex-col h-full"
                 >
                     <div className="absolute top-0 left-0 w-1 h-full bg-[#00AEEF] group-hover:w-2 transition-all"></div>
                     <div className="mb-4 bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center text-[#00AEEF] group-hover:scale-110 transition-transform">
                         <Scale className="w-6 h-6" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-900 mb-2">Check Rules</h2>
-                    <p className="text-slate-500 mb-4">
-                        Follow the decision tree to see if AI is permitted for your specific assignment or research.
+                    <p className="text-slate-500 mb-4 flex-grow">
+                        See if AI is permitted for your specific assignment or research.
                     </p>
                     <div className="flex items-center text-[#00AEEF] font-semibold text-sm">
                         Start Check <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </div>
                 </button>
 
+                {/* 2. Create Log (New) */}
                 <button 
-                  onClick={() => setMode('advice')}
-                  className="group relative overflow-hidden bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#F99D1C] transition-all duration-300 text-left"
+                  onClick={() => { setMode('log'); setLogContext('generic'); }}
+                  className="group relative overflow-hidden bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#F99D1C] transition-all duration-300 text-left flex flex-col h-full"
                 >
                     <div className="absolute top-0 left-0 w-1 h-full bg-[#F99D1C] group-hover:w-2 transition-all"></div>
                     <div className="mb-4 bg-orange-50 w-12 h-12 rounded-full flex items-center justify-center text-[#F99D1C] group-hover:scale-110 transition-transform">
+                        <ScrollText className="w-6 h-6" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Create AI Log</h2>
+                    <p className="text-slate-500 mb-4 flex-grow">
+                        Generate a visual audit trail to prove your work is your own.
+                    </p>
+                    <div className="flex items-center text-[#F99D1C] font-semibold text-sm">
+                        Open Logbook <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                </button>
+
+                {/* 3. Understand Impact */}
+                <button 
+                  onClick={() => setMode('advice')}
+                  className="group relative overflow-hidden bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#00A651] transition-all duration-300 text-left flex flex-col h-full"
+                >
+                    <div className="absolute top-0 left-0 w-1 h-full bg-[#00A651] group-hover:w-2 transition-all"></div>
+                    <div className="mb-4 bg-green-50 w-12 h-12 rounded-full flex items-center justify-center text-[#00A651] group-hover:scale-110 transition-transform">
                         <Brain className="w-6 h-6" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-900 mb-2">Understand Impact</h2>
-                    <p className="text-slate-500 mb-4">
-                        Discover how using AI well helps you learn, while using it badly makes you lose your ability to think.
+                    <p className="text-slate-500 mb-4 flex-grow">
+                        How using AI well helps you learn, while bad use hurts you.
                     </p>
-                    <div className="flex items-center text-[#F99D1C] font-semibold text-sm">
+                    <div className="flex items-center text-[#00A651] font-semibold text-sm">
                         View Scenarios <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </div>
                 </button>
+             </div>
+          )}
+
+          {/* LOG MODE */}
+          {mode === 'log' && (
+             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl mx-auto space-y-8">
+                 
+                 {/* INTRO BOX */}
+                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center">
+                    <p className="text-slate-600 mb-0">
+                        Academic integrity isn't just about saying "I didn't cheat". 
+                        It is about showing <strong>how</strong> you used the tool. 
+                        Record your prompts, the output, and—most importantly—how you refined it.
+                    </p>
+                    {/* Context Specific Tip */}
+                    {logContext !== 'generic' && (
+                        <div className="mt-4 inline-block bg-[#00AEEF]/10 text-[#00AEEF] px-4 py-2 rounded-lg text-sm font-bold border border-[#00AEEF]/20">
+                            {logContext === 'assignment' && "💡 Tip: Focus on how you critiqued the AI's draft."}
+                            {logContext === 'research' && "💡 Tip: Confirm you verified every citation."}
+                            {logContext === 'study' && "💡 Tip: Log the questions you asked to test yourself."}
+                        </div>
+                    )}
+                 </div>
+
+                 {/* TIMELINE RENDERER */}
+                 {logEntries.length > 0 && (
+                    <div className="space-y-8 relative pl-4 md:pl-8">
+                        {/* Vertical Timeline Line */}
+                        <div className="absolute left-4 md:left-8 top-4 bottom-4 w-0.5 bg-slate-200"></div>
+
+                        {logEntries.map((entry, index) => (
+                            <div key={entry.id} className="relative animate-in slide-in-from-left-4 duration-500">
+                                {/* Entry Number Bubble */}
+                                <div className="absolute -left-3 md:-left-3 top-0 w-6 h-6 rounded-full bg-slate-800 text-white text-xs font-bold flex items-center justify-center z-10 ring-4 ring-white">
+                                    {index + 1}
+                                </div>
+
+                                <div className="ml-6 md:ml-8 space-y-4">
+                                    
+                                    {/* 1. THE ASK (Prompt) */}
+                                    <div className="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm relative group">
+                                        <div className="absolute -left-2 top-0 w-2 h-2 bg-slate-200 [clip-path:polygon(100%_0,0_0,100%_100%)]"></div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="mt-1 p-1.5 bg-slate-100 rounded text-slate-600">
+                                                <MessageSquare className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">The Prompt</p>
+                                                <p className="text-slate-800 text-sm whitespace-pre-wrap">{entry.prompt}</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => deleteLogEntry(entry.id)} 
+                                                className="text-slate-300 hover:text-red-500 transition-colors"
+                                                title="Delete Entry"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* 2. THE OUTPUT */}
+                                    <div className="ml-4 md:ml-8 bg-orange-50 border border-orange-100 p-4 rounded-xl shadow-sm">
+                                        <div className="flex items-start gap-3">
+                                            <div className="mt-1 p-1.5 bg-orange-100 rounded text-[#F99D1C]">
+                                                <Sparkles className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-1">AI Output</p>
+                                                <p className="text-slate-700 text-sm whitespace-pre-wrap">{entry.output || <span className="text-orange-300 italic">No summary recorded</span>}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* 3. REFINEMENT */}
+                                    <div className="ml-8 md:ml-16 bg-green-50 border border-green-100 p-4 rounded-xl shadow-sm border-l-4 border-l-[#00A651]">
+                                        <div className="flex items-start gap-3">
+                                            <div className="mt-1 p-1.5 bg-green-100 rounded text-[#00A651]">
+                                                <PenTool className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">My Refinement</p>
+                                                <p className="text-slate-800 text-sm whitespace-pre-wrap font-medium">{entry.refinement || <span className="text-green-300 italic">No refinement recorded</span>}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                 )}
+
+                 {/* ADD ENTRY FORM */}
+                 <div className={`bg-white rounded-2xl border-2 border-dashed border-slate-200 p-6 ${logEntries.length === 0 ? 'mt-0' : 'mt-8'}`}>
+                    <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <Plus className="w-5 h-5 text-[#00AEEF]" />
+                        {logEntries.length === 0 ? "Start your Log" : "Add Next Step"}
+                    </h3>
+                    
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">1. What did you ask? (Paste Prompt)</label>
+                            <textarea 
+                                value={currentEntry.prompt}
+                                onChange={(e) => setCurrentEntry({...currentEntry, prompt: e.target.value})}
+                                placeholder="e.g. 'Explain the difference between qualitative and quantitative research methods...'"
+                                className="w-full p-3 rounded-xl border border-slate-200 focus:border-[#00AEEF] focus:ring-2 focus:ring-[#00AEEF]/20 outline-none text-sm min-h-[80px]"
+                            />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-[#F99D1C] uppercase tracking-wider mb-1">2. What did it give you?</label>
+                                <textarea 
+                                    value={currentEntry.output}
+                                    onChange={(e) => setCurrentEntry({...currentEntry, output: e.target.value})}
+                                    placeholder="e.g. 'It provided a table with 5 key differences...'"
+                                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-[#F99D1C] focus:ring-2 focus:ring-[#F99D1C]/20 outline-none text-sm min-h-[100px]"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-[#00A651] uppercase tracking-wider mb-1">3. How did you change/verify it?</label>
+                                <textarea 
+                                    value={currentEntry.refinement}
+                                    onChange={(e) => setCurrentEntry({...currentEntry, refinement: e.target.value})}
+                                    placeholder="e.g. 'I verified the examples using the textbook and rewrote the definitions in my own words.'"
+                                    className="w-full p-3 rounded-xl border border-slate-200 focus:border-[#00A651] focus:ring-2 focus:ring-[#00A651]/20 outline-none text-sm min-h-[100px]"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <button 
+                                onClick={addLogEntry}
+                                disabled={!currentEntry.prompt.trim()}
+                                className="px-6 py-2 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Add Entry
+                            </button>
+                        </div>
+                    </div>
+                 </div>
+
+                 {/* GENERATE DECLARATION */}
+                 {logEntries.length > 0 && (
+                     <div className="pt-4 border-t border-slate-100 flex justify-center">
+                         {!showDeclaration ? (
+                             <button 
+                                onClick={() => setShowDeclaration(true)}
+                                className="flex items-center gap-2 px-8 py-4 bg-[#00AEEF] text-white rounded-xl font-bold hover:bg-[#009bd5] shadow-lg shadow-blue-200 transition-all hover:-translate-y-1"
+                             >
+                                <ClipboardList className="w-5 h-5" />
+                                Generate Declaration
+                             </button>
+                         ) : (
+                             <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                 <div className="bg-slate-900 text-slate-300 p-6 rounded-xl font-mono text-xs md:text-sm leading-relaxed overflow-x-auto relative group">
+                                     <pre className="whitespace-pre-wrap">{generateDeclarationText()}</pre>
+                                     <button 
+                                        onClick={copyDeclaration}
+                                        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+                                     >
+                                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                     </button>
+                                 </div>
+                                 <p className="text-center text-slate-400 text-xs mt-3">
+                                     Copy this text and paste it at the top of your assignment or in your appendix.
+                                 </p>
+                             </div>
+                         )}
+                     </div>
+                 )}
              </div>
           )}
 
@@ -990,6 +1276,17 @@ export default function App() {
                               </>
                             )}
                           </ul>
+                          
+                          {/* Link to Log Book - Available for all tasks where AI is allowed */}
+                          <div className="mt-4 pt-4 border-t border-slate-200">
+                                    <button
+                                        onClick={() => { setMode('log'); setLogContext(taskType || 'generic'); }}
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F99D1C] text-white font-bold rounded-lg hover:bg-orange-600 transition-colors shadow-sm text-sm"
+                                    >
+                                        <ScrollText className="w-4 h-4" />
+                                        Create Audit Log
+                                    </button>
+                                </div>
                       </div>
                     )}
                   </div>
