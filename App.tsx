@@ -307,32 +307,32 @@ export default function App() {
     { 
       title: "Question Assumptions", 
       icon: <HelpCircle className="w-5 h-5"/>, 
-      when: "Use this when you feel certain but lack proof. It reveals shaky foundations in your thinking.", 
-      prompt: "I'm convinced that [your belief]. What unstated assumptions underpin this belief? What other explanations could account for this?" 
+      when: "Use this when you feel certain but lack proof. It reveals weak foundations in your thinking.", 
+      prompt: "I'm convinced that [your belief]. What hidden assumptions support this belief? What other explanations could account for this?" 
     },
     { 
       title: "Understand Opposing Views", 
       icon: <Scale className="w-5 h-5"/>, 
-      when: "Use this to prevent 'straw man' arguments. It forces you to deal with the strongest version of the opposing case.", 
+      when: "Use this to prevent weak arguments. It forces you to deal with the strongest version of the other side.", 
       prompt: "Act as [person who disagrees with you] and explain their perspective in a way that makes their stance understandable." 
     },
     { 
       title: "Spotting Biases", 
       icon: <Microscope className="w-5 h-5"/>, 
       when: "Use this when you feel emotional about a topic. It acts as a reality check for your brain's shortcuts.", 
-      prompt: "I'm strongly convinced that [your position]. Which mental shortcuts or blind spots could be distorting my view?" 
+      prompt: "I'm strongly convinced that [your position]. Which mental shortcuts or blind spots could be changing my view?" 
     },
     { 
       title: "Testing Logic", 
       icon: <BrainCircuit className="w-5 h-5"/>, 
-      when: "Use this to proofread your thinking. It finds the weak links in your chain of reasoning.", 
+      when: "Use this to check your thinking. It finds the weak links in your chain of reasoning.", 
       prompt: "My reasoning is: [your reasoning]. Where does this argument break down or lack evidence?" 
     },
     { 
-      title: "Analyze Ripple Effects", 
+      title: "Analyze Future Effects", 
       icon: <Layers className="w-5 h-5"/>, 
-      when: "Use this for complex decisions. It helps you see the long-term domino effect, not just the immediate result.", 
-      prompt: "I'm considering [potential decision]. What unexpected second and third-order consequences might unfold beyond the immediate impact?" 
+      when: "Use this for complex decisions. It helps you see the long-term results, not just the immediate ones.", 
+      prompt: "I'm considering [potential decision]. What unexpected second and third-order consequences might happen later?" 
     },
     { 
       title: "Play Devil's Advocate", 
@@ -344,12 +344,12 @@ export default function App() {
       title: "Verifying Sources", 
       icon: <ShieldAlert className="w-5 h-5"/>, 
       when: "Use this when you see a shocking headline. It stops you from being misled by bad data.", 
-      prompt: "I found this claim: [claim]. How would I fact-check this? What questions would help me assess whether this information is reliable?" 
+      prompt: "I found this claim: [claim]. How would I fact-check this? What questions would help me assess whether this information is true?" 
     },
     { 
       title: "Revealing Blind Spots", 
       icon: <Ghost className="w-5 h-5"/>, 
-      when: "Use this when you are stuck in a loop. It shines a light on solutions you might be ignoring.", 
+      when: "Use this when you are stuck in a loop. It shines a light on solutions you might be missing.", 
       prompt: "I've tried [your solution attempts], but [problem] keeps coming back. What underlying factors am I failing to notice?" 
     },
     { 
@@ -365,9 +365,9 @@ export default function App() {
       prompt: "Help me understand exactly what [term] means when we're talking about [situation]?" 
     },
     { 
-      title: "Challenge The Status Quo", 
+      title: "Challenge 'The Usual Way'", 
       icon: <GitBranch className="w-5 h-5"/>, 
-      when: "Use this when 'the way we always do it' isn't working. It helps spark innovation.", 
+      when: "Use this when 'the way we always do it' isn't working. It helps spark new ideas.", 
       prompt: "We've always used [current approach], but it's failing. Why might that be, and what unconventional alternatives could we explore?" 
     },
     { 
@@ -534,7 +534,7 @@ export default function App() {
                     </div>
                     <h2 className="text-2xl font-bold text-slate-900 mb-2">Understand Impact</h2>
                     <p className="text-slate-500 mb-4">
-                        Discover how effective AI use amplifies your mind, while poor use causes cognitive atrophy.
+                        Discover how using AI well helps you learn, while using it badly makes you lose your ability to think.
                     </p>
                     <div className="flex items-center text-[#F99D1C] font-semibold text-sm">
                         View Scenarios <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -560,21 +560,21 @@ export default function App() {
                               <h2 className="text-2xl font-bold text-[#00A651]">The Pilot (Effective Use)</h2>
                           </div>
                           <p className="text-xl font-medium text-slate-800 mb-4">
-                              "AI acts as a scaffold. You build higher."
+                              "AI acts as a tool to help you climb. You build higher."
                           </p>
                           <div className="space-y-4 text-slate-600 leading-relaxed">
                               <p>
-                                  When you use AI effectively, you remain the pilot. You use the machine to handle the grunt work, 
-                                  summarize the vast data, or critique your logic. But <strong>you</strong> make the decisions.
+                                  When you use AI effectively, you remain the pilot. You use the machine to handle the routine tasks, 
+                                  summarize large amounts of info, or check your logic. But <strong>you</strong> make the decisions.
                               </p>
                               <ul className="space-y-2 mt-4">
                                   <li className="flex gap-2">
                                       <CheckCircle2 className="w-5 h-5 text-[#00A651] shrink-0" />
-                                      <span><strong>Amplification:</strong> You understand more concepts in less time.</span>
+                                      <span><strong>Expansion:</strong> You understand more concepts in less time.</span>
                                   </li>
                                   <li className="flex gap-2">
                                       <CheckCircle2 className="w-5 h-5 text-[#00A651] shrink-0" />
-                                      <span><strong>Connection:</strong> You connect ideas that were previously disparate.</span>
+                                      <span><strong>Connection:</strong> You connect ideas that were previously unconnected.</span>
                                   </li>
                                   <li className="flex gap-2">
                                       <CheckCircle2 className="w-5 h-5 text-[#00A651] shrink-0" />
@@ -602,13 +602,13 @@ export default function App() {
                           </p>
                           <div className="space-y-4 text-slate-600 leading-relaxed">
                               <p>
-                                  When you replace your thinking with AI, you are not just breaking rules—you are eroding your own mind.
-                                  Learning happens in the struggle to articulate a thought. If you skip the struggle, you skip the growth.
+                                  When you replace your thinking with AI, you are not just breaking rules—you are weakening your own mind.
+                                  Learning happens in the struggle to write a thought. If you skip the struggle, you skip the growth.
                               </p>
                               <ul className="space-y-2 mt-4">
                                   <li className="flex gap-2">
                                       <ShieldAlert className="w-5 h-5 text-[#ED1C24] shrink-0" />
-                                      <span><strong>Atrophy:</strong> Your neural pathways for critical analysis fade away.</span>
+                                      <span><strong>Weakness:</strong> Your ability to think critically fades away.</span>
                                   </li>
                                   <li className="flex gap-2">
                                       <ShieldAlert className="w-5 h-5 text-[#ED1C24] shrink-0" />
@@ -729,50 +729,50 @@ export default function App() {
                             </div>
                         ) : (
                             // Detail View
-                            <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 animate-in slide-in-from-right-4 duration-300 relative">
+                            <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-5 animate-in slide-in-from-right-4 duration-300 relative">
                                 {(() => {
                                     const item = criticalThinkingPrompts[activePromptIndex];
                                     return (
-                                        <div className="flex flex-col h-full">
+                                        <div className="flex flex-col">
                                             
                                             <button 
                                                 onClick={() => setActivePromptIndex(null)}
-                                                className="mb-4 self-start text-slate-500 hover:text-[#00AEEF] flex items-center gap-2 text-sm font-medium transition-colors"
+                                                className="mb-2 self-start text-slate-500 hover:text-[#00AEEF] flex items-center gap-2 text-sm font-medium transition-colors"
                                             >
                                                 <ArrowLeft className="w-4 h-4" /> Back to List
                                             </button>
 
-                                            <div className="flex items-center gap-4 mb-6">
-                                                <div className="p-3 bg-[#00AEEF] text-white rounded-xl shadow-md">
-                                                    {React.cloneElement(item.icon as React.ReactElement<any>, { className: "w-8 h-8" })}
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="p-2.5 bg-[#00AEEF] text-white rounded-xl shadow-md">
+                                                    {React.cloneElement(item.icon as React.ReactElement<any>, { className: "w-6 h-6" })}
                                                 </div>
-                                                <h2 className="text-2xl font-bold text-slate-900">{item.title}</h2>
+                                                <h2 className="text-xl font-bold text-slate-900 leading-tight">{item.title}</h2>
                                             </div>
                                             
-                                            <div className="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                                <span className="text-xs font-bold uppercase tracking-wider text-[#00AEEF] mb-2 block">The Concept</span>
-                                                <p className="text-slate-700 leading-relaxed text-lg">{item.when}</p>
+                                            <div className="mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                                <span className="text-xs font-bold uppercase tracking-wider text-[#00AEEF] mb-1 block">The Concept</span>
+                                                <p className="text-slate-700 leading-relaxed text-base">{item.when}</p>
                                             </div>
 
-                                            <div className="mt-auto">
-                                                <p className="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                            <div className="">
+                                                <p className="font-bold text-slate-900 mb-2 flex items-center gap-2 text-sm">
                                                     <Sparkles className="w-4 h-4 text-[#F99D1C]" />
                                                     The Prompt
                                                 </p>
-                                                <div className="bg-slate-900 text-slate-100 p-5 rounded-xl font-mono text-sm leading-relaxed shadow-inner border border-slate-800 mb-4">
+                                                <div className="bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-sm leading-relaxed shadow-inner border border-slate-800 mb-3">
                                                     <FormatPromptText text={item.prompt} />
                                                 </div>
                                                 <button
                                                     onClick={() => copySpecificPrompt(item.prompt, activePromptIndex)}
-                                                    className="w-full py-4 flex items-center justify-center gap-2 text-base font-bold text-white bg-[#00AEEF] hover:bg-[#009bd5] rounded-xl transition-all shadow-lg hover:shadow-[#00AEEF]/30"
+                                                    className="w-full py-3 flex items-center justify-center gap-2 text-sm font-bold text-white bg-[#00AEEF] hover:bg-[#009bd5] rounded-xl transition-all shadow-lg hover:shadow-[#00AEEF]/30"
                                                 >
                                                     {copiedIndex === activePromptIndex ? (
                                                         <>
-                                                            <Check className="w-5 h-5" /> Copied to Clipboard
+                                                            <Check className="w-4 h-4" /> Copied to Clipboard
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <Copy className="w-5 h-5" /> Copy Prompt
+                                                            <Copy className="w-4 h-4" /> Copy Prompt
                                                         </>
                                                     )}
                                                 </button>
@@ -859,7 +859,7 @@ export default function App() {
                           <p><strong>Research involves high stakes data privacy and ethics.</strong></p>
                           <ul className="list-disc pl-5 space-y-1 text-slate-700">
                             <li><strong>Privacy (POPIA):</strong> Never upload participant names, transcripts, or confidential data to AI.</li>
-                            <li><strong>Fabrication:</strong> AI often invents citations. You must verify every single source.</li>
+                            <li><strong>Fake Data:</strong> AI often invents citations. You must verify every single source.</li>
                             <li><strong>Methodology:</strong> If AI helped in design or analysis, it must be disclosed in your methodology.</li>
                           </ul>
                       </div>
@@ -896,7 +896,7 @@ export default function App() {
                           <>
                             {isAssignment && (
                               <p>
-                                <strong>This is a high-stakes production task.</strong> The main risk is <strong>Misrepresentation</strong>.
+                                <strong>This is an important graded task.</strong> The main risk is <strong>Misrepresentation (Pretending it is yours)</strong>.
                                 Pretending AI-generated work is your own is a form of academic misconduct, distinct from just plagiarism.
                                 {moduleRule === 'none' && " You must produce this work entirely yourself."}
                                 {moduleRule === 'limited' && " You can use AI for specific tasks (e.g. grammar) but NOT to write the content."}
